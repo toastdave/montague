@@ -19,6 +19,19 @@ The goal of this schema is not to model every future concept. The goal is to sup
 - Prefer a simple direct model over polymorphic workflow tables in MVP.
 - Defer accounting, billing, and advanced permission tables until the core loop is solid.
 
+## Postgres Implementation Notes
+
+The SQL companion file, `mvp_schema.sql`, is written specifically for Postgres and adds a few production-oriented choices beyond the conceptual model in this document.
+
+- UUID primary keys default with `gen_random_uuid()`.
+- Case-insensitive emails use `citext`.
+- Status and role columns use Postgres enum types instead of freeform text.
+- `updated_at` is maintained with a trigger instead of relying on application code.
+- Date and workflow sanity checks are enforced at the database layer where practical.
+- Foreign keys use `on delete set null` only where preserving historical records matters more than strict parent deletion.
+
+These choices keep the schema simple enough for MVP while making it harder for bad data or inconsistent status values to leak in.
+
 ## Why `users` And `employees` Are Separate
 
 These two tables look similar at first, but they serve different purposes.
