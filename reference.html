@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Foreman Daily Sheet — Montague Development</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────── */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F1F3F4;color:#202124;font-size:15px}
+
+  /* ── Layout ───────────────────────────────────────── */
+  .phone{max-width:430px;margin:0 auto;background:#F1F3F4;min-height:100vh;padding-bottom:90px}
+  .topbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+  .topbar-title{font-size:16px;font-weight:600;color:#1a1a1a}
+  .topbar-sub{font-size:12px;color:#666;margin-top:2px}
+  .section{background:#fff;border-radius:12px;margin:10px 12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+  .section-hdr{padding:11px 14px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+  .section-title{font-size:13px;font-weight:600;color:#1a1a1a}
+  .section-body{padding:12px 14px}
+
+  /* ── Inputs ───────────────────────────────────────── */
+  input[type=time],input[type=number],input[type=text],select,textarea{
+    font-family:inherit;font-size:14px;border:1px solid #dadce0;border-radius:8px;
+    padding:8px 10px;background:#fff;color:#202124;width:100%;
+    -webkit-appearance:none;appearance:none;outline:none;transition:border-color .15s
+  }
+  input:focus,select:focus,textarea:focus{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.15)}
+  textarea{resize:none;height:64px;line-height:1.5}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+  .btn-primary{background:#1a1a1a;color:#fff}
+  .btn-primary:active{background:#333}
+  .btn-secondary{background:#fff;color:#1a1a1a;border:1px solid #dadce0}
+  .btn-secondary:active{background:#f5f5f5}
+  .btn-green{background:#1e6b36;color:#fff}
+  .btn-green:active{background:#165428}
+  .btn-danger{background:#fff;color:#c5221f;border:1px solid #f5c6c5}
+  .btn-warn{background:#fff;color:#b06000;border:1px solid #fde68a}
+  .btn-sm{padding:5px 12px;font-size:12px;border-radius:6px}
+  .btn-full{width:100%;padding:14px;font-size:15px;border-radius:12px}
+  .btn-full:disabled{opacity:.38;cursor:not-allowed}
+
+  /* ── Pills / day selector ─────────────────────────── */
+  .pill-row{display:flex;gap:8px;margin-top:8px}
+  .pill{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #dadce0;background:#fff;color:#666;font-family:inherit}
+  .pill.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+
+  /* ── Badges ───────────────────────────────────────── */
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.02em}
+  .b-md{background:#e8f0fe;color:#1557b0}
+  .b-tss{background:#fef3e2;color:#b06000}
+  .b-co{background:#fef3e2;color:#b06000}
+  .b-reg{background:#e8f0fe;color:#1557b0}
+  .b-ok{background:#e6f4ea;color:#1e6b36}
+  .b-warn{background:#fff3e0;color:#b06000}
+  .b-err{background:#fce8e6;color:#c5221f}
+  .b-done{background:#e6f4ea;color:#1e6b36}
+
+  /* ── Time rows ────────────────────────────────────── */
+  .time-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .time-label{font-size:13px;color:#666;min-width:38px;font-weight:500}
+  .time-input{flex:1;font-size:16px;font-weight:600;text-align:center}
+
+  /* ── Worker rows ──────────────────────────────────── */
+  .worker-row{padding:10px 14px;border-bottom:1px solid #f5f5f5;display:flex;align-items:flex-start;gap:10px}
+  .worker-row:last-child{border-bottom:none}
+  .avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+
+  /* ── Task blocks ──────────────────────────────────── */
+  .task-block{padding:10px 14px;border-bottom:1px solid #f5f5f5}
+  .task-block:last-child{border-bottom:none}
+  .task-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:2px}
+  .task-meta{font-size:11px;color:#888;margin-bottom:8px}
+  .bulk-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f5f5f5;margin-bottom:4px}
+  .alloc-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #fafafa}
+  .alloc-row:last-child{border-bottom:none}
+  .alloc-label{flex:1;font-size:12px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .alloc-input{width:62px;font-size:13px;font-weight:600;text-align:right;border-radius:6px;padding:4px 6px}
+  .alloc-input[readonly]{background:#f8f9fa;border-color:#f0f0f0;color:#aaa}
+  .ovr-btn{font-size:11px;padding:3px 9px;border-radius:6px;border:1px solid #dadce0;background:#fff;color:#666;cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;flex-shrink:0}
+  .ovr-btn.on{background:#fff3e0;border-color:#fde68a;color:#b06000}
+
+  /* ── Total bar ────────────────────────────────────── */
+  .total-bar{background:#fff;border-radius:12px;margin:0 12px 10px;padding:12px 14px;border:1px solid #e0e0e0;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .total-val{font-size:20px;font-weight:700}
+  .ok{color:#1e6b36}.warn{color:#b06000}.err{color:#c5221f}
+
+  /* ── Plans ────────────────────────────────────────── */
+  .plan-link{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f5f5f5;text-decoration:none;cursor:pointer}
+  .plan-link:last-child{border-bottom:none}
+  .plan-link:active{background:#f8f9fa}
+  .plan-icon{width:32px;height:32px;border-radius:8px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1557b0;flex-shrink:0}
+
+  /* ── Photos ───────────────────────────────────────── */
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 14px}
+  .photo-thumb{aspect-ratio:1;border-radius:10px;background:#f5f5f5;border:1px solid #e0e0e0;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+  .photo-add{border:2px dashed #dadce0;background:#fafafa}
+  .photo-add:active{background:#f0f0f0}
+  .photo-remove{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:12px;font-weight:700;line-height:1}
+
+  /* ── Injury section ───────────────────────────────── */
+  .injury-section{background:#fff;border-radius:12px;margin:10px 12px;overflow:hidden;border:1.5px solid #f5c6c5;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .injury-hdr{padding:11px 14px;border-bottom:1px solid #f5c6c5;display:flex;align-items:center;justify-content:space-between;background:#fce8e6}
+  .toggle-track{width:44px;height:24px;border-radius:12px;background:#dadce0;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;border:none}
+  .toggle-track.on{background:#c5221f}
+  .toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .toggle-track.on .toggle-thumb{left:22px}
+  .injury-alert{background:#fce8e6;border-radius:8px;padding:8px 12px;font-size:12px;color:#c5221f;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+  .injury-worker-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #fafafa;font-size:13px}
+  .injury-worker-row:last-child{border-bottom:none}
+  .inj-check{width:20px;height:20px;border:2px solid #f5c6c5;border-radius:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#c5221f;background:#fff}
+  .inj-check.checked{background:#fce8e6;border-color:#c5221f}
+
+  /* ── Submit bar ───────────────────────────────────── */
+  .submit-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;padding:10px 16px;display:flex;gap:10px;max-width:430px;margin:0 auto;z-index:100}
+
+  /* ── Success screen ───────────────────────────────── */
+  .success-screen{text-align:center;padding:3rem 1.5rem}
+  .check-circle{width:64px;height:64px;border-radius:50%;background:#e6f4ea;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;color:#1e6b36}
+
+  /* ── Loading overlay ──────────────────────────────── */
+  .loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  .loading-overlay.show{display:flex}
+  .spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-msg{font-size:14px;color:#555;font-weight:500}
+
+  /* ── Lang toggle ──────────────────────────────────── */
+  .lang-toggle{display:flex;gap:4px}
+  .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #dadce0;background:#fff;color:#666;font-family:inherit}
+  .lang-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+
+  /* ── Toast ────────────────────────────────────────── */
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-msg" id="loading-msg">Saving...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="phone" id="app">
+
+  <!-- ── LOGIN SCREEN ──────────────────────────────── -->
+  <div id="screen-login">
+    <div style="padding:3rem 1.5rem;text-align:center">
+      <div style="font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:6px">Montague Development</div>
+      <div style="font-size:14px;color:#666;margin-bottom:2rem">Foreman daily sheet</div>
+      <div style="background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.1)">
+        <div style="font-size:13px;color:#555;margin-bottom:14px;font-weight:500">Select your crew</div>
+        <div id="crew-select-list"></div>
+      </div>
+      <div style="margin-top:1rem;font-size:11px;color:#aaa">Montague Development · Field Management Platform v1.0</div>
+    </div>
+  </div>
+
+  <!-- ── MAIN SHEET ─────────────────────────────────── -->
+  <div id="screen-main" style="display:none">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div>
+          <div class="topbar-title" id="t-crew-title">Crew</div>
+          <div class="topbar-sub" id="t-date-label"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="lang-toggle">
+            <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+            <button class="lang-btn" onclick="setLang('es',this)">ES</button>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="signOut()" style="font-size:11px">Sign out</button>
+        </div>
+      </div>
+      <div class="pill-row">
+        <button class="pill active" id="pill-today" onclick="setDay(0,this)">Today</button>
+        <button class="pill" id="pill-yest" onclick="setDay(-1,this)">Yesterday</button>
+      </div>
+    </div>
+
+    <!-- Crew Hours -->
+    <div class="section" style="margin-top:10px">
+      <div class="section-hdr">
+        <span class="section-title" data-key="crewHours">Crew hours</span>
+        <span style="font-size:11px;color:#888" data-key="bulkHint">Bulk set for all</span>
+      </div>
+      <div class="section-body">
+        <div class="time-row">
+          <span class="time-label" data-key="start">Start</span>
+          <input class="time-input" type="time" id="bulk-start" value="07:00" onchange="applyBulkTime()">
+          <span class="time-label" style="text-align:right" data-key="end">End</span>
+          <input class="time-input" type="time" id="bulk-end" value="15:30" onchange="applyBulkTime()">
+        </div>
+        <div style="font-size:11px;color:#888;text-align:center" id="bulk-hrs-label">8.5 hrs · applies to all</div>
+      </div>
+    </div>
+
+    <!-- Crew Members -->
+    <div class="section">
+      <div class="section-hdr">
+        <span class="section-title" data-key="crewMembers">Crew members</span>
+        <span style="font-size:11px;color:#888" id="crew-ct"></span>
+      </div>
+      <div id="workers-list"></div>
+    </div>
+
+    <!-- Task Allocation -->
+    <div class="section">
+      <div class="section-hdr">
+        <span class="section-title" data-key="taskAlloc">Task allocation</span>
+        <span style="font-size:11px;color:#888" data-key="hrsByTask">Hours by task</span>
+      </div>
+      <div style="padding:8px 14px 4px;font-size:12px;color:#888" data-key="bulkAllocHint">Set bulk hours per task, then override individuals</div>
+      <div id="tasks-list"></div>
+    </div>
+
+    <!-- Total bar -->
+    <div class="total-bar">
+      <div>
+        <div style="font-size:12px;color:#666;font-weight:500" data-key="totalAllocated">Total hours allocated</div>
+        <div style="font-size:11px;color:#888" id="balance-detail"></div>
+      </div>
+      <div class="total-val" id="total-display">0.00</div>
+    </div>
+
+    <!-- Plans -->
+    <div class="section">
+      <div class="section-hdr">
+        <span class="section-title" data-key="plans">Plans &amp; drawings</span>
+        <span style="font-size:11px;color:#1a73e8" data-key="tapToOpen">Tap to open</span>
+      </div>
+      <div id="plans-list">
+        <div style="padding:14px;font-size:13px;color:#aaa;text-align:center">No plans linked to today's jobs.</div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="section">
+      <div class="section-hdr">
+        <span class="section-title" data-key="photos">Photos</span>
+        <span style="font-size:11px;color:#888" id="photo-count-label">0 added</span>
+      </div>
+      <div class="photo-grid" id="photo-grid">
+        <div class="photo-thumb photo-add" onclick="triggerPhoto()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M20 7h-3l-2-3H9L7 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
+        </div>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotos(this)">
+    </div>
+
+    <!-- Injury Report -->
+    <div class="injury-section">
+      <div class="injury-hdr">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c5221f" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span style="font-size:13px;font-weight:600;color:#c5221f" data-key="injuryReport">Injury / incident report</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:#c5221f" data-key="injuryToggleLabel">Incident today?</span>
+          <button class="toggle-track" id="injury-toggle" onclick="toggleInjury()"><div class="toggle-thumb"></div></button>
+        </div>
+      </div>
+      <div id="injury-form" style="display:none;padding:12px 14px">
+        <div class="injury-alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span data-key="injuryAlert">Notify management immediately for serious injuries. This form does not replace a 911 call.</span>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:6px" data-key="whoInvolved">Who was involved?</div>
+        <div id="injury-workers" style="margin-bottom:10px"></div>
+        <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:4px" data-key="incidentType">Incident type</div>
+        <select id="injury-type" style="margin-bottom:10px">
+          <option value="">-- Select type --</option>
+          <option>First aid only</option>
+          <option>Near miss / no injury</option>
+          <option>Medical treatment required</option>
+          <option>Lost time injury</option>
+          <option>Property / equipment damage</option>
+          <option>Environmental incident</option>
+        </select>
+        <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:4px" data-key="bodyPart">Body part affected</div>
+        <select id="injury-body" style="margin-bottom:10px">
+          <option value="">-- Select --</option>
+          <option>Head / face</option><option>Eye(s)</option><option>Neck</option>
+          <option>Shoulder / arm</option><option>Hand / wrist / fingers</option>
+          <option>Back</option><option>Torso / ribs</option>
+          <option>Hip / leg</option><option>Knee / ankle / foot</option>
+          <option>Multiple</option><option>N/A — no injury</option>
+        </select>
+        <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:4px" data-key="incidentDesc">Describe what happened</div>
+        <textarea id="injury-desc" style="height:80px;margin-bottom:10px" data-placeholder-key="injuryDescPlaceholder" placeholder="Describe the incident, how it happened, and immediate action taken..."></textarea>
+        <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:6px" data-key="medicalAttention">Was medical attention sought?</div>
+        <div style="display:flex;gap:8px;margin-bottom:4px">
+          <button class="pill active" id="med-no" onclick="setMedical('no',this)" data-key="medNo">No</button>
+          <button class="pill" id="med-yes" onclick="setMedical('yes',this)" data-key="medYes">Yes — transported</button>
+          <button class="pill" id="med-self" onclick="setMedical('self',this)" data-key="medSelf">Self-treated</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="section">
+      <div class="section-hdr"><span class="section-title" data-key="notes">Notes for management</span></div>
+      <div class="section-body">
+        <textarea id="day-notes" data-placeholder-key="notesPlaceholder" placeholder="Issues, delays, equipment problems, change order details..."></textarea>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+
+    <div class="submit-bar">
+      <button class="btn btn-secondary btn-full" onclick="saveDraft()" id="btn-draft" style="flex:0 0 auto;width:auto;padding:14px 18px">Save draft</button>
+      <button class="btn btn-primary btn-full" onclick="submitDay()" id="btn-submit">Submit day</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS SCREEN ─────────────────────────────── -->
+  <div id="screen-success" style="display:none">
+    <div class="topbar">
+      <div class="topbar-title" id="success-title">Day submitted</div>
+    </div>
+    <div class="success-screen">
+      <div class="check-circle">✓</div>
+      <div style="font-size:19px;font-weight:700;color:#1a1a1a;margin-bottom:8px" id="success-heading">All done!</div>
+      <div style="font-size:13px;color:#666;margin-bottom:1.5rem" id="success-detail"></div>
+      <div style="background:#f8f9fa;border-radius:12px;padding:1rem;text-align:left;margin-bottom:1.5rem;border:1px solid #e0e0e0" id="success-summary"></div>
+      <div id="success-injury-block" style="display:none;background:#fce8e6;border-radius:12px;padding:1rem;text-align:left;margin-bottom:1.5rem;border:1px solid #f5c6c5">
+        <div style="font-size:13px;font-weight:600;color:#c5221f;margin-bottom:4px" data-key="injuryReported">Incident reported — management notified</div>
+        <div style="font-size:12px;color:#c5221f" id="success-injury-detail"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="resetDay()" id="btn-next-day" style="max-width:240px;margin:0 auto;display:block">Start next day</button>
+    </div>
+  </div>
+
+</div><!-- end .phone -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION — your Google Sheet ID is baked in here
+// ═══════════════════════════════════════════════════════
+const SHEET_ID = '1lr9piD88Rm5qG-v8iJC3ZSftZKYbP8MZAwNlZOK4B5c';
+const SHEET_API = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values`;
+const COMPANY = 'Montague Development';
+
+// ═══════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════
+const STRINGS = {
+  en: {
+    crewHours:'Crew hours',bulkHint:'Bulk set for all',start:'Start',end:'End',
+    crewMembers:'Crew members',taskAlloc:'Task allocation',hrsByTask:'Hours by task',
+    bulkAllocHint:'Set bulk hours per task, then override individuals',
+    totalAllocated:'Total hours allocated',plans:'Plans & drawings',tapToOpen:'Tap to open',
+    photos:'Photos',notes:'Notes for management',
+    notesPlaceholder:'Issues, delays, equipment problems, change order details...',
+    override:'Override',overrideOn:'Override on',workers:'workers',
+    bulkHrs:'Bulk hrs',eachWorker:'each worker',taskTotal:'Task total',
+    balanced:'Balanced',unalloc:'unallocated',over:'over',
+    balanceOk:'Matches crew hours — ready to submit',
+    balanceWarn:'hrs over crew total',balanceErr:'hrs unallocated of',total:'total',
+    submitted:'Day submitted',allDone:'All done!',nextDay:'Start next day',
+    saveDraft:'Save draft',submitDay:'Submit day',
+    confirmUnbalanced:"Hours don't balance — submit anyway?",
+    today:'Today',yesterday:'Yesterday',
+    injuryReport:'Injury / incident report',injuryToggleLabel:'Incident today?',
+    injuryAlert:'Notify management immediately for serious injuries. This form does not replace a 911 call.',
+    whoInvolved:'Who was involved?',incidentType:'Incident type',
+    bodyPart:'Body part affected',incidentDesc:'Describe what happened',
+    injuryDescPlaceholder:'Describe the incident, how it happened, and immediate action taken...',
+    medicalAttention:'Was medical attention sought?',
+    medNo:'No',medYes:'Yes — transported',medSelf:'Self-treated',
+    injuryPhotoPrompt:'Add photos below to document the scene.',
+    injuryReported:'Incident reported — management notified',
+    saving:'Saving to Google Sheets...',saved:'Saved!',saveError:'Save failed — check connection',
+    loading:'Loading crew data...',
+  },
+  es: {
+    crewHours:'Horas de la cuadrilla',bulkHint:'Aplicar a todos',start:'Entrada',end:'Salida',
+    crewMembers:'Miembros de la cuadrilla',taskAlloc:'Distribución de tareas',hrsByTask:'Horas por tarea',
+    bulkAllocHint:'Establece horas para todos, luego ajusta individualmente',
+    totalAllocated:'Total de horas asignadas',plans:'Planos y dibujos',tapToOpen:'Toca para abrir',
+    photos:'Fotos',notes:'Notas para la gerencia',
+    notesPlaceholder:'Problemas, retrasos, fallas de equipo, detalles de orden de cambio...',
+    override:'Ajustar',overrideOn:'Ajustando',workers:'trabajadores',
+    bulkHrs:'Hrs generales',eachWorker:'por trabajador',taskTotal:'Total de tarea',
+    balanced:'Balanceado',unalloc:'sin asignar',over:'de más',
+    balanceOk:'Coincide con horas — listo para enviar',
+    balanceWarn:'hrs de más del total',balanceErr:'hrs sin asignar de',total:'total',
+    submitted:'Día enviado',allDone:'¡Listo!',nextDay:'Empezar otro día',
+    saveDraft:'Guardar borrador',submitDay:'Enviar día',
+    confirmUnbalanced:'Las horas no cuadran — ¿enviar de todas formas?',
+    today:'Hoy',yesterday:'Ayer',
+    injuryReport:'Reporte de lesión / incidente',injuryToggleLabel:'¿Incidente hoy?',
+    injuryAlert:'Notifique a la gerencia de inmediato. Este formulario no reemplaza una llamada al 911.',
+    whoInvolved:'¿Quién estuvo involucrado?',incidentType:'Tipo de incidente',
+    bodyPart:'Parte del cuerpo afectada',incidentDesc:'Describa lo que ocurrió',
+    injuryDescPlaceholder:'Describa el incidente, cómo ocurrió y las medidas tomadas...',
+    medicalAttention:'¿Se buscó atención médica?',
+    medNo:'No',medYes:'Sí — transportado',medSelf:'Se trató solo',
+    injuryPhotoPrompt:'Agregue fotos para documentar la escena.',
+    injuryReported:'Incidente reportado — gerencia notificada',
+    saving:'Guardando en Google Sheets...',saved:'¡Guardado!',saveError:'Error al guardar — verifique conexión',
+    loading:'Cargando datos de cuadrilla...',
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// STATIC DATA (loaded from sheet on login — these are
+// fallback defaults used before sheet data loads)
+// ═══════════════════════════════════════════════════════
+const CREWS_FALLBACK = [
+  {id:'C001',name:'Martinez crew',foreman:'J. Martinez',members:[
+    {id:1,name:'Juan Ramirez',empNum:124,co:'MD',color:'#1557b0'},
+    {id:2,name:'David Ramirez',empNum:111,co:'MD',color:'#1e6b36'},
+    {id:3,name:'Eduardo Ramirez',empNum:272,co:'MD',color:'#b06000'},
+    {id:4,name:'Alberto',empNum:'TSS2',co:'TSS',color:'#6b21a8'},
+  ]},
+  {id:'C002',name:'Cisneros crew',foreman:'R. Cisneros',members:[
+    {id:5,name:'Rene Cisneros',empNum:171,co:'MD',color:'#1557b0'},
+    {id:6,name:'Salvador Cervantes',empNum:172,co:'MD',color:'#1e6b36'},
+    {id:7,name:'Mario',empNum:'TSS12',co:'TSS',color:'#b06000'},
+    {id:8,name:'Juan Negrete Lopez',empNum:254,co:'MD',color:'#6b21a8'},
+    {id:9,name:'Roberto Negrete Garcia',empNum:255,co:'MD',color:'#c5221f'},
+  ]},
+  {id:'C003',name:'Meza crew',foreman:'G. Meza',members:[
+    {id:10,name:'Geronimo Meza',empNum:118,co:'MD',color:'#1557b0'},
+    {id:11,name:'Filimon Mireles',empNum:259,co:'MD',color:'#1e6b36'},
+    {id:12,name:'luislopez',empNum:'TSS10',co:'TSS',color:'#b06000'},
+    {id:13,name:'Magno Ayala',empNum:'TSS11',co:'TSS',color:'#6b21a8'},
+    {id:14,name:'Gabriel',empNum:'TSS7',co:'TSS',color:'#c5221f'},
+  ]},
+  {id:'C004',name:'Miravete crew',foreman:'V. Miravete',members:[
+    {id:15,name:'Ventura Miravete',empNum:139,co:'MD',color:'#1557b0'},
+    {id:16,name:'Carlos Santiago Pluas Franco',empNum:269,co:'MD',color:'#1e6b36'},
+    {id:17,name:'Freddie',empNum:'TSS6',co:'TSS',color:'#b06000'},
+    {id:18,name:'Garry Myatt',empNum:116,co:'MD',color:'#6b21a8'},
+  ]},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let lang = 'en';
+let currentCrew = null;
+let dayOffset = 0;
+let workerTimes = {}, workerTimeOverrides = {};
+let bulkTaskHours = {}, workerTaskOverrides = {}, workerTaskHours = {};
+let injuryOn = false, medicalStatus = 'no', injuredWorkers = {};
+let photos = [];
+let todayTasks = [];
+let todayPlans = [];
+let crews = CREWS_FALLBACK;
+
+const T = () => STRINGS[lang];
+const pad = n => String(n).padStart(2,'0');
+const nowTime = () => { const d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const calcHrs = (s,e) => { if(!s||!e)return 0; const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number); return Math.max(0,((eh*60+em)-(sh*60+sm))/60); };
+const fmt = h => parseFloat(h).toFixed(2);
+
+function getDateLabel(offset) {
+  const d = new Date(); d.setDate(d.getDate()+offset);
+  return d.toLocaleDateString(lang==='es'?'es-MX':'en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+}
+function getDateISO(offset) {
+  const d = new Date(); d.setDate(d.getDate()+offset);
+  return d.toISOString().slice(0,10);
+}
+
+// ── Toast notification ─────────────────────────────────
+function showToast(msg, duration=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── Loading overlay ────────────────────────────────────
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg||T().saving;
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════
+// GOOGLE SHEETS — append rows
+// ═══════════════════════════════════════════════════════
+const BRIDGE_URL = 'https://script.google.com/macros/s/AKfycbwKoCW76OMlzHJhCyLJu59hdgF4OQVJl-wc6YNsIqe6ywe7pkYgHljp51y2QjFkNA/exec';
+
+async function callBridge(payload) {
+  try {
+    const response = await fetch(BRIDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (result.status !== 'ok') throw new Error(result.message || 'Bridge error');
+    return { ok: true, data: result };
+  } catch(err) {
+    console.error('Bridge error:', err);
+    // Save to localStorage as offline fallback
+    const key = 'montague_offline_' + Date.now();
+    localStorage.setItem(key, JSON.stringify(payload));
+    return { ok: false, error: err.toString() };
+  }
+}
+
+async function appendToSheet(tabName, rows) {
+  const result = await callBridge({ action: 'append', tab: tabName, rows });
+  return result.ok;
+}
+
+// ═══════════════════════════════════════════════════════
+// CREW LOGIN SCREEN
+// ═══════════════════════════════════════════════════════
+function renderLoginScreen() {
+  const el = document.getElementById('crew-select-list');
+  el.innerHTML = crews.map(c => `
+    <div onclick="selectCrew('${c.id}')" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:8px;border:1px solid #e0e0e0;background:#fafafa;transition:background .15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fafafa'">
+      <div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#1557b0;flex-shrink:0">${c.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <div style="flex:1;text-align:left">
+        <div style="font-weight:600;font-size:14px;color:#1a1a1a">${c.name}</div>
+        <div style="font-size:12px;color:#888">Foreman: ${c.foreman} · ${c.members.length} members</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  `).join('');
+}
+
+function selectCrew(crewId) {
+  currentCrew = crews.find(c => c.id === crewId);
+  if (!currentCrew) return;
+  initState();
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-main').style.display = 'block';
+  document.getElementById('t-crew-title').textContent = currentCrew.name;
+  document.getElementById('t-date-label').textContent = getDateLabel(0);
+  document.getElementById('crew-ct').textContent = currentCrew.members.length + ' ' + T().workers;
+  loadTodaySchedule();
+  renderWorkers();
+  renderInjuryWorkers();
+  renderPhotoGrid();
+  applyBulkTime();
+  updateTotal();
+  applyTranslations();
+}
+
+function signOut() {
+  currentCrew = null;
+  document.getElementById('screen-success').style.display = 'none';
+  document.getElementById('screen-main').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════
+// LOAD TODAY'S SCHEDULE FROM SHEET
+// ═══════════════════════════════════════════════════════
+async function loadTodaySchedule() {
+  // In production: reads ScheduleAssignments and Tasks tabs
+  // filtered by crew ID and today's date.
+  // Using sample tasks as fallback while Apps Script is being set up.
+  todayTasks = [
+    {id:'T001',jobNum:'2578',jobName:'Margot Phase II (Ph 3)',taskName:'Final grade streets — subgrade',costCode:'5FGSS',phase:5,type:'regular'},
+    {id:'T002',jobNum:'2578',jobName:'Margot Phase II (Ph 3)',taskName:'Pond conversion west basin',costCode:'8PC',phase:8,type:'change-order'},
+  ];
+  todayPlans = [
+    {name:'Margot Ph 3 — Sheet C-4 Grading',job:'2578',src:'Fieldwire',url:'https://fieldwire.com'},
+    {name:'Margot Ph 3 — Sheet U-2 Utilities',job:'2578',src:'Fieldwire',url:'https://fieldwire.com'},
+  ];
+  renderTasks();
+  renderPlans();
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE INIT
+// ═══════════════════════════════════════════════════════
+function initState() {
+  if (!currentCrew) return;
+  currentCrew.members.forEach(m => {
+    workerTimes[m.id] = {start:'07:00',end:'15:30'};
+    workerTimeOverrides[m.id] = false;
+    injuredWorkers[m.id] = false;
+  });
+  todayTasks.forEach(t => {
+    bulkTaskHours[t.id] = 0;
+    workerTaskOverrides[t.id] = {};
+    workerTaskHours[t.id] = {};
+    currentCrew.members.forEach(m => {
+      workerTaskOverrides[t.id][m.id] = false;
+      workerTaskHours[t.id][m.id] = 0;
+    });
+  });
+  injuryOn = false; medicalStatus = 'no'; photos = [];
+}
+
+// ═══════════════════════════════════════════════════════
+// LANGUAGE
+// ═══════════════════════════════════════════════════════
+function setLang(l, btn) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyTranslations();
+  renderWorkers();
+  renderTasks();
+  renderInjuryWorkers();
+  updateTotal();
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const k = el.getAttribute('data-key');
+    if (T()[k] !== undefined) el.textContent = T()[k];
+  });
+  document.querySelectorAll('[data-placeholder-key]').forEach(el => {
+    const k = el.getAttribute('data-placeholder-key');
+    if (T()[k]) el.placeholder = T()[k];
+  });
+  document.getElementById('btn-draft').textContent = T().saveDraft;
+  document.getElementById('btn-submit').textContent = T().submitDay;
+  document.getElementById('pill-today').textContent = T().today;
+  document.getElementById('pill-yest').textContent = T().yesterday;
+  if (currentCrew) document.getElementById('crew-ct').textContent = currentCrew.members.length + ' ' + T().workers;
+  updateBulkHrsLabel();
+  updatePhotoLabel();
+}
+
+// ═══════════════════════════════════════════════════════
+// DAY SELECTION
+// ═══════════════════════════════════════════════════════
+function setDay(offset, btn) {
+  dayOffset = offset;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('t-date-label').textContent = getDateLabel(offset);
+}
+
+// ═══════════════════════════════════════════════════════
+// BULK TIME
+// ═══════════════════════════════════════════════════════
+function updateBulkHrsLabel() {
+  const s = document.getElementById('bulk-start').value;
+  const e = document.getElementById('bulk-end').value;
+  document.getElementById('bulk-hrs-label').textContent = fmt(calcHrs(s,e)) + ' hrs · ' + T().bulkHint.toLowerCase();
+}
+
+function applyBulkTime() {
+  const s = document.getElementById('bulk-start').value;
+  const e = document.getElementById('bulk-end').value;
+  if (!currentCrew) return;
+  currentCrew.members.forEach(m => {
+    if (!workerTimeOverrides[m.id]) {
+      workerTimes[m.id] = {start:s,end:e};
+      const si = document.getElementById('wt-start-'+m.id);
+      const ei = document.getElementById('wt-end-'+m.id);
+      if (si) si.value = s;
+      if (ei) ei.value = e;
+      updateWorkerHrsDisplay(m.id);
+    }
+  });
+  updateBulkHrsLabel();
+  updateTotal();
+}
+
+function updateWorkerHrsDisplay(id) {
+  const el = document.getElementById('w-hrs-'+id);
+  if (el) el.textContent = fmt(calcHrs(workerTimes[id].start, workerTimes[id].end)) + ' hrs';
+}
+
+function toggleTimeOverride(id) {
+  workerTimeOverrides[id] = !workerTimeOverrides[id];
+  const btn = document.getElementById('wt-ovr-'+id);
+  const wrap = document.getElementById('wt-wrap-'+id);
+  if (workerTimeOverrides[id]) {
+    btn.textContent = T().overrideOn; btn.className = 'ovr-btn on';
+    wrap.style.display = 'flex';
+  } else {
+    btn.textContent = T().override; btn.className = 'ovr-btn';
+    wrap.style.display = 'none';
+    const s = document.getElementById('bulk-start').value;
+    const e = document.getElementById('bulk-end').value;
+    workerTimes[id] = {start:s,end:e};
+    document.getElementById('wt-start-'+id).value = s;
+    document.getElementById('wt-end-'+id).value = e;
+    updateWorkerHrsDisplay(id);
+    updateTotal();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER WORKERS
+// ═══════════════════════════════════════════════════════
+function renderWorkers() {
+  if (!currentCrew) return;
+  document.getElementById('workers-list').innerHTML = currentCrew.members.map(m => {
+    const t = workerTimes[m.id] || {start:'07:00',end:'15:30'};
+    const h = calcHrs(t.start, t.end);
+    const ini = m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="worker-row">
+      <div class="avatar" style="background:${m.color}22;color:${m.color}">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px">
+          <span style="font-weight:600;font-size:13px">${m.name}</span>
+          <span class="badge ${m.co==='TSS'?'b-tss':'b-md'}">${m.co}</span>
+          <span class="badge b-warn" id="w-bal-${m.id}">—</span>
+        </div>
+        <div style="font-size:11px;color:#888">#${m.empNum} · <span id="w-hrs-${m.id}">${fmt(h)} hrs</span></div>
+        <div style="display:none;gap:6px;align-items:center;margin-top:6px" id="wt-wrap-${m.id}">
+          <input class="time-input" type="time" id="wt-start-${m.id}" value="${t.start}" style="flex:1;font-size:14px" onchange="workerTimes[${m.id}].start=this.value;updateWorkerHrsDisplay(${m.id});updateTotal()">
+          <span style="font-size:12px;color:#aaa">→</span>
+          <input class="time-input" type="time" id="wt-end-${m.id}" value="${t.end}" style="flex:1;font-size:14px" onchange="workerTimes[${m.id}].end=this.value;updateWorkerHrsDisplay(${m.id});updateTotal()">
+        </div>
+      </div>
+      <button class="ovr-btn" id="wt-ovr-${m.id}" onclick="toggleTimeOverride(${m.id})">${T().override}</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER TASKS
+// ═══════════════════════════════════════════════════════
+function renderTasks() {
+  if (!currentCrew) return;
+  const el = document.getElementById('tasks-list');
+  if (!todayTasks.length) {
+    el.innerHTML = '<div style="padding:14px;font-size:13px;color:#aaa;text-align:center">No tasks assigned for today. Tasks will load from the schedule.</div>';
+    return;
+  }
+  el.innerHTML = todayTasks.map(t => `
+    <div class="task-block">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px">
+        <div style="flex:1;min-width:0">
+          <div class="task-name">${t.taskName}</div>
+          <div class="task-meta">Job ${t.jobNum} · ${t.costCode} · Phase ${t.phase}</div>
+        </div>
+        <span class="badge ${t.type==='change-order'?'b-co':'b-reg'}">${t.type==='change-order'?'CO':'Reg'}</span>
+      </div>
+      <div class="bulk-row">
+        <span style="font-size:12px;color:#666;flex:1;font-weight:500">${T().bulkHrs} (${T().eachWorker})</span>
+        <input class="alloc-input" type="number" step="0.25" min="0" max="16" placeholder="0" id="bulk-alloc-${t.id}" oninput="applyBulkAlloc('${t.id}')">
+        <span style="font-size:12px;color:#888">hrs</span>
+      </div>
+      ${currentCrew.members.map(m => {
+        const ini = m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        return `<div class="alloc-row">
+          <div class="avatar" style="width:24px;height:24px;font-size:10px;font-weight:700;background:${m.color}22;color:${m.color};flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center">${ini}</div>
+          <span class="alloc-label">${m.name.split(' ')[0]}</span>
+          <button class="ovr-btn" id="wa-ovr-${t.id}-${m.id}" onclick="toggleAllocOverride('${t.id}',${m.id})">${T().override}</button>
+          <input class="alloc-input" type="number" step="0.25" min="0" max="16" placeholder="0" id="wa-${t.id}-${m.id}" readonly oninput="workerTaskHours['${t.id}'][${m.id}]=parseFloat(this.value)||0;updateTaskTotal('${t.id}');updateTotal()">
+          <span style="font-size:12px;color:#888">hrs</span>
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:#888;text-align:right;padding-top:5px" id="tt-${t.id}">${T().taskTotal}: 0.00 hrs</div>
+    </div>
+  `).join('');
+}
+
+function applyBulkAlloc(taskId) {
+  const v = parseFloat(document.getElementById('bulk-alloc-'+taskId).value) || 0;
+  bulkTaskHours[taskId] = v;
+  if (!currentCrew) return;
+  currentCrew.members.forEach(m => {
+    if (!workerTaskOverrides[taskId] || !workerTaskOverrides[taskId][m.id]) {
+      if (!workerTaskHours[taskId]) workerTaskHours[taskId] = {};
+      workerTaskHours[taskId][m.id] = v;
+      const el = document.getElementById('wa-'+taskId+'-'+m.id);
+      if (el) el.value = v || '';
+    }
+  });
+  updateTaskTotal(taskId);
+  updateTotal();
+}
+
+function toggleAllocOverride(taskId, memberId) {
+  if (!workerTaskOverrides[taskId]) workerTaskOverrides[taskId] = {};
+  workerTaskOverrides[taskId][memberId] = !workerTaskOverrides[taskId][memberId];
+  const btn = document.getElementById('wa-ovr-'+taskId+'-'+memberId);
+  const inp = document.getElementById('wa-'+taskId+'-'+memberId);
+  if (workerTaskOverrides[taskId][memberId]) {
+    btn.textContent = T().overrideOn; btn.className = 'ovr-btn on';
+    inp.removeAttribute('readonly');
+    inp.style.background = '#fff'; inp.style.borderColor = '#fde68a';
+  } else {
+    btn.textContent = T().override; btn.className = 'ovr-btn';
+    inp.setAttribute('readonly','');
+    inp.style.background = '#f8f9fa'; inp.style.borderColor = '#f0f0f0';
+    workerTaskHours[taskId][memberId] = bulkTaskHours[taskId] || 0;
+    inp.value = bulkTaskHours[taskId] || '';
+    updateTaskTotal(taskId);
+    updateTotal();
+  }
+}
+
+function updateTaskTotal(taskId) {
+  if (!currentCrew) return;
+  const sum = currentCrew.members.reduce((s,m) => s+(parseFloat(document.getElementById('wa-'+taskId+'-'+m.id)?.value)||0), 0);
+  const el = document.getElementById('tt-'+taskId);
+  if (el) el.textContent = T().taskTotal + ': ' + fmt(sum) + ' hrs';
+}
+
+// ═══════════════════════════════════════════════════════
+// TOTAL / BALANCE
+// ═══════════════════════════════════════════════════════
+function updateTotal() {
+  if (!currentCrew) return;
+  let totalAlloc = 0, totalExpected = 0;
+  const workerAlloc = {};
+  currentCrew.members.forEach(m => {
+    workerAlloc[m.id] = 0;
+    totalExpected += calcHrs(workerTimes[m.id]?.start||'07:00', workerTimes[m.id]?.end||'15:30');
+  });
+  todayTasks.forEach(t => {
+    currentCrew.members.forEach(m => {
+      const v = parseFloat(document.getElementById('wa-'+t.id+'-'+m.id)?.value) || 0;
+      workerAlloc[m.id] += v;
+      totalAlloc += v;
+    });
+  });
+  currentCrew.members.forEach(m => {
+    const exp = calcHrs(workerTimes[m.id]?.start||'07:00', workerTimes[m.id]?.end||'15:30');
+    const diff = workerAlloc[m.id] - exp;
+    const badge = document.getElementById('w-bal-'+m.id);
+    if (!badge) return;
+    if (Math.abs(diff) < 0.01) { badge.textContent = T().balanced; badge.className = 'badge b-ok'; }
+    else if (diff > 0) { badge.textContent = '+'+fmt(diff)+' '+T().over; badge.className = 'badge b-warn'; }
+    else { badge.textContent = fmt(Math.abs(diff))+' '+T().unalloc; badge.className = 'badge b-warn'; }
+  });
+  const diff = totalAlloc - totalExpected;
+  const tv = document.getElementById('total-display');
+  const bd = document.getElementById('balance-detail');
+  tv.textContent = fmt(totalAlloc) + ' hrs';
+  if (Math.abs(diff) < 0.01) { tv.className = 'total-val ok'; bd.textContent = T().balanceOk; }
+  else if (diff > 0) { tv.className = 'total-val warn'; bd.textContent = fmt(diff)+' '+T().balanceWarn+' '+fmt(totalExpected); }
+  else { tv.className = 'total-val err'; bd.textContent = fmt(Math.abs(diff))+' '+T().balanceErr+' '+fmt(totalExpected)+' '+T().total; }
+}
+
+// ═══════════════════════════════════════════════════════
+// PLANS
+// ═══════════════════════════════════════════════════════
+function renderPlans() {
+  const el = document.getElementById('plans-list');
+  if (!todayPlans.length) {
+    el.innerHTML = '<div style="padding:14px;font-size:13px;color:#aaa;text-align:center">No plans linked to today\'s jobs.</div>';
+    return;
+  }
+  el.innerHTML = todayPlans.map(p => `
+    <a class="plan-link" href="${p.url}" target="_blank" rel="noopener">
+      <div class="plan-icon">${p.src.slice(0,2)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+        <div style="font-size:11px;color:#888">Job ${p.job} · ${p.src}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" style="flex-shrink:0"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// PHOTOS
+// ═══════════════════════════════════════════════════════
+function triggerPhoto() { document.getElementById('photo-input').click(); }
+
+function handlePhotos(input) {
+  Array.from(input.files).forEach(file => {
+    const r = new FileReader();
+    r.onload = e => { photos.push({url:e.target.result,name:file.name}); renderPhotoGrid(); };
+    r.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function removePhoto(idx) { photos.splice(idx,1); renderPhotoGrid(); }
+
+function updatePhotoLabel() {
+  const l = document.getElementById('photo-count-label');
+  if (l) l.textContent = photos.length + (lang==='es'?' agregadas':' added');
+}
+
+function renderPhotoGrid() {
+  updatePhotoLabel();
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = photos.map((p,i) => `
+    <div class="photo-thumb">
+      <img src="${p.url}" alt="${p.name}" loading="lazy">
+      <div class="photo-remove" onclick="removePhoto(${i})">×</div>
+    </div>
+  `).join('') + `
+    <div class="photo-thumb photo-add" onclick="triggerPhoto()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M20 7h-3l-2-3H9L7 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// INJURY
+// ═══════════════════════════════════════════════════════
+function toggleInjury() {
+  injuryOn = !injuryOn;
+  const track = document.getElementById('injury-toggle');
+  const form = document.getElementById('injury-form');
+  track.className = 'toggle-track' + (injuryOn?' on':'');
+  form.style.display = injuryOn ? 'block' : 'none';
+}
+
+function renderInjuryWorkers() {
+  if (!currentCrew) return;
+  document.getElementById('injury-workers').innerHTML = currentCrew.members.map(m => {
+    const ini = m.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="injury-worker-row">
+      <div class="inj-check${injuredWorkers[m.id]?' checked':''}" id="inj-chk-${m.id}" onclick="toggleInjured(${m.id})">${injuredWorkers[m.id]?'✓':''}</div>
+      <div class="avatar" style="width:26px;height:26px;font-size:10px;font-weight:700;background:${m.color}22;color:${m.color};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ini}</div>
+      <span style="font-size:13px;color:#1a1a1a">${m.name}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleInjured(id) {
+  injuredWorkers[id] = !injuredWorkers[id];
+  const chk = document.getElementById('inj-chk-'+id);
+  chk.className = 'inj-check' + (injuredWorkers[id]?' checked':'');
+  chk.textContent = injuredWorkers[id] ? '✓' : '';
+}
+
+function setMedical(val, btn) {
+  medicalStatus = val;
+  document.querySelectorAll('#med-no,#med-yes,#med-self').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE DRAFT
+// ═══════════════════════════════════════════════════════
+function saveDraft() {
+  if (!currentCrew) return;
+  const draft = buildPayloadRows();
+  localStorage.setItem('montague_draft_'+getDateISO(dayOffset), JSON.stringify(draft));
+  showToast(lang==='es'?'Borrador guardado.':'Draft saved.');
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD PAYLOAD (rows for PayrollEntries sheet)
+// ═══════════════════════════════════════════════════════
+function buildPayloadRows() {
+  const rows = [];
+  const dateISO = getDateISO(dayOffset);
+  const now = new Date().toISOString();
+  const weekEnding = getWeekEnding();
+
+  todayTasks.forEach(t => {
+    currentCrew.members.forEach(m => {
+      const hrs = parseFloat(document.getElementById('wa-'+t.id+'-'+m.id)?.value) || 0;
+      if (hrs <= 0) return;
+      rows.push([
+        `PE-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+        m.co,
+        m.empNum,
+        m.name,
+        t.jobNum,
+        t.jobName,
+        dateISO,
+        t.phase,
+        t.costCode,
+        hrs.toFixed(2),
+        'REG',
+        weekEnding,
+        currentCrew.name + ' / ' + currentCrew.foreman,
+        now,
+        document.getElementById('day-notes').value || ''
+      ]);
+    });
+  });
+  return rows;
+}
+
+function buildEntryObjects() {
+  const entries = [];
+  todayTasks.forEach(t => {
+    currentCrew.members.forEach(m => {
+      const hrs = parseFloat(document.getElementById('wa-'+t.id+'-'+m.id)?.value) || 0;
+      if (hrs <= 0) return;
+      entries.push({
+        company: m.co,
+        empNum: m.empNum,
+        empName: m.name,
+        jobNum: t.jobNum,
+        jobName: t.jobName,
+        phase: t.phase,
+        costCode: t.costCode,
+        hours: hrs.toFixed(2),
+        payScale: 'REG',
+        type: t.type
+      });
+    });
+  });
+  return entries;
+}
+
+function getWeekEnding() {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = (day <= 5) ? (5 - day) : (5 - day + 7);
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT DAY
+// ═══════════════════════════════════════════════════════
+async function submitDay() {
+  if (!currentCrew) return;
+  let totalExp = currentCrew.members.reduce((s,m) => s+calcHrs(workerTimes[m.id]?.start||'07:00', workerTimes[m.id]?.end||'15:30'), 0);
+  let totalAlloc = 0;
+  todayTasks.forEach(t => currentCrew.members.forEach(m => {
+    totalAlloc += parseFloat(document.getElementById('wa-'+t.id+'-'+m.id)?.value) || 0;
+  }));
+  if (Math.abs(totalAlloc - totalExp) > 0.5) {
+    if (!confirm(T().confirmUnbalanced)) return;
+  }
+
+  const rows = buildPayloadRows();
+  if (!rows.length) { alert(lang==='es'?'Ingrese horas antes de enviar.':'Enter hours before submitting.'); return; }
+
+  showLoading(T().saving);
+
+  let incidentPayload = null;
+  if (injuryOn) {
+    const injured = currentCrew.members.filter(m=>injuredWorkers[m.id]).map(m=>m.name);
+    incidentPayload = {
+      reported: true,
+      workersInvolved: injured,
+      type: document.getElementById('injury-type').value,
+      bodyPart: document.getElementById('injury-body').value,
+      description: document.getElementById('injury-desc').value,
+      medicalAttention: medicalStatus,
+      notes: ''
+    };
+  }
+
+  const result = await callBridge({
+    action: 'submitForeman',
+    crewName: currentCrew.name,
+    foreman: currentCrew.foreman,
+    date: getDateISO(dayOffset),
+    weekEnding: getWeekEnding(),
+    entries: buildEntryObjects(),
+    incident: incidentPayload,
+    notes: document.getElementById('day-notes').value || ''
+  });
+
+  const saved = result.ok;
+  hideLoading();
+
+  const loc = lang==='es'?'es-MX':'en-US';
+  const d = new Date(); d.setDate(d.getDate()+dayOffset);
+  document.getElementById('success-title').textContent = T().submitted;
+  document.getElementById('success-heading').textContent = T().allDone;
+  document.getElementById('success-detail').textContent =
+    d.toLocaleDateString(loc,{weekday:'long',month:'long',day:'numeric'}) + ' · ' + currentCrew.name +
+    (photos.length ? ' · ' + photos.length + ' photo(s)' : '') +
+    (saved ? '' : (lang==='es'?' · Guardado localmente (sin conexión)':' · Saved locally (offline)'));
+
+  let summary = '';
+  todayTasks.forEach(t => {
+    const hrs = currentCrew.members.reduce((s,m)=>s+(parseFloat(document.getElementById('wa-'+t.id+'-'+m.id)?.value)||0),0);
+    if (hrs>0) summary += `<div style="padding:5px 0;border-bottom:1px solid #e0e0e0;font-size:13px"><span style="font-weight:600">Job ${t.jobNum}</span> — ${t.taskName}<br><span style="font-size:11px;color:#888">${t.costCode} · ${fmt(hrs)} hrs${t.type==='change-order'?' · <span style="color:#b06000">Change order</span>':''}</span></div>`;
+  });
+  document.getElementById('success-summary').innerHTML = summary || '<span style="font-size:13px;color:#aaa">No hours recorded.</span>';
+
+  const injBlock = document.getElementById('success-injury-block');
+  if (injuryOn) {
+    injBlock.style.display = 'block';
+    const injured = currentCrew.members.filter(m=>injuredWorkers[m.id]).map(m=>m.name);
+    document.querySelector('[data-key="injuryReported"]').textContent = T().injuryReported;
+    document.getElementById('success-injury-detail').textContent =
+      (injured.length?injured.join(', '):(lang==='es'?'Sin trabajadores seleccionados':'No workers selected')) +
+      ' · ' + (document.getElementById('injury-type').value||'Type not selected');
+  } else { injBlock.style.display='none'; }
+
+  document.getElementById('btn-next-day').textContent = T().nextDay;
+  document.getElementById('screen-main').style.display = 'none';
+  document.getElementById('screen-success').style.display = 'block';
+
+  showToast(saved ? T().saved : T().saveError, 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════════════
+function resetDay() {
+  initState();
+  document.getElementById('injury-toggle').className = 'toggle-track';
+  document.getElementById('injury-form').style.display = 'none';
+  document.getElementById('screen-success').style.display = 'none';
+  document.getElementById('screen-main').style.display = 'block';
+  document.getElementById('day-notes').value = '';
+  document.getElementById('bulk-start').value = '07:00';
+  document.getElementById('bulk-end').value = '15:30';
+  renderWorkers();
+  renderTasks();
+  renderInjuryWorkers();
+  renderPhotoGrid();
+  applyBulkTime();
+  updateTotal();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.getElementById('t-date-label').textContent = getDateLabel(0);
+renderLoginScreen();
+</script>
+</body>
+</html>
